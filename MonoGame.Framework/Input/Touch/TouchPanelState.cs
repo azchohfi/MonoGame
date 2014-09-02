@@ -1,4 +1,8 @@
-﻿using System;
+﻿// MonoGame - Copyright (C) The MonoGame Team
+// This file is subject to the terms and conditions defined in
+// file 'LICENSE.txt', which is part of this source code package.
+
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Xna.Framework.Input.Touch
@@ -142,7 +146,7 @@ namespace Microsoft.Xna.Framework.Input.Touch
                 }
             }
 
-            var result = new TouchCollection(_touchState.ToArray());
+            var result = (_touchState.Count > 0) ? new TouchCollection(_touchState.ToArray()) : TouchCollection.Empty;
             AgeTouches(_touchState);
             return result;
         }
@@ -237,14 +241,14 @@ namespace Microsoft.Xna.Framework.Input.Touch
             var mostToRemove = Math.Max(_touchState.Count, _gestureState.Count);
             if (mostToRemove > 0)
             {
-                List<TouchLocation> temp = new List<TouchLocation>(mostToRemove);
+                var temp = new List<TouchLocation>(mostToRemove);
 
                 // Submit a new event for each non-released location.
                 temp.AddRange(_touchState);
                 foreach (var touch in temp)
                 {
                     if (touch.State != TouchLocationState.Released)
-                        ApplyTouch(_touchState, new TouchLocation(touch.Id, TouchLocationState.Released, touch.Position));
+                        ApplyTouch(_touchState, new TouchLocation(touch.Id, TouchLocationState.Released, touch.Position, CurrentTimestamp));
                 }
 
                 temp.Clear();
@@ -252,7 +256,7 @@ namespace Microsoft.Xna.Framework.Input.Touch
                 foreach (var touch in temp)
                 {
                     if (touch.State != TouchLocationState.Released)
-                        ApplyTouch(_gestureState, new TouchLocation(touch.Id, TouchLocationState.Released, touch.Position));
+                        ApplyTouch(_gestureState, new TouchLocation(touch.Id, TouchLocationState.Released, touch.Position, CurrentTimestamp));
                 }
             }
 
